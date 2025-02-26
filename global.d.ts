@@ -1,9 +1,9 @@
-import { ZodTypeAny } from 'zod';
- 
+import { ZodTypeAny } from "zod";
+
 declare global {
-    namespace PlaywrightTest {
-        interface Matchers<R, T> {
-            toMatchSchema(schema: ZodTypeAny): Promise<R>;
-        }
+  namespace PlaywrightTest {
+    interface Matchers<R, T> {
+      toMatchSchema(schema: ZodTypeAny): Promise<R>;
     }
+  }
 }

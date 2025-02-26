@@ -1,24 +1,30 @@
-import { test, expect } from '@playwright/test';
-import { extractToken } from '../helpers/auth.helper';
+import { test, expect } from "@playwright/test";
+import { extractToken } from "../support/helpers/auth.helper";
 
+test("Assignemnt 1: /auth", async ({ request }) => {
+  let token: string;
 
-test('/auth', async ({ request }) => {
-let token: string;
+  await test.step("POST: /login", async () => {
+    const response = await request.post("/auth/login", {
+      data: { username: "admin", password: "password" },
+    });
 
-  test.step('/login', async () => {
-    
-    const response = await request.post('auth/login', { data: { username: 'admin', password: 'password' } });
-    expect(response.status()).toBe(200)
+    expect(response.status()).toBe(200);
+    expect(response.headers()["set-cookie"]).toContain("token=");
+
     token = await extractToken(response);
-    expect(token).toBeTruthy();
-  });
-  test.step('/validate', async () => {
-    
-  });
-  test.step('/logout', async () => {
-    
   });
 
-  
+  await test.step("POST: /validate", async () => {
+    const response = await request.post("/auth/validate", {
+      data: { token: token },
+    });
+    expect(response.status()).toBe(200);
+  });
+  await test.step("POST: /logout", async () => {
+    const response = await request.post("/auth/logout", {
+      data: { token: token },
+    });
+    expect(response.status()).toBe(200);
+  });
 });
-

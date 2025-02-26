@@ -5,15 +5,22 @@
   "main": "index.js",
   "scripts": {
     "test": "playwright test",
-    "codegen": "orval --config orval.config.ts"
+    "schema:auth": "typed-openapi ./support/api-spec/auth-api.json -r zod --output ./support/zod/auth.types.schema.zod.ts",
+    "schema:booking": "typed-openapi ./support/api-spec/booking-api.json -r zod --output ./support/zod/booking.types.schema.zod.ts",
+    "schema:room": "typed-openapi ./support/api-spec/room-api.json -r zod --output ./support/zod/room.types.schema.zod.ts",
+    "schema:generation": "npm-run-all schema:auth schema:booking schema:room"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@faker-js/faker": "^9.5.1",
     "@playwright/test": "^1.50.1",
     "@types/node": "^22.13.5",
-    "orval": "^7.6.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "3.5.2",
+    "swagger-cli": "^4.0.4",
+    "typed-openapi": "^0.10.1",
     "zod": "^3.24.2"
   }
 }

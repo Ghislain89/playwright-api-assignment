@@ -1,23 +1,22 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: "./tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
-  reporter: 'list',
+  reporter: "list",
   use: {
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
   },
   projects: [
     {
-      name: 'API',
+      name: "API",
       use: {
-        baseURL: 'https://automationintesting.online'
-      }
+        ignoreHTTPSErrors: true,
+        baseURL: "https://automationintesting.online",
+      },
     },
   ],
-
-  
 });
