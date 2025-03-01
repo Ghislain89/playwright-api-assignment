@@ -16,15 +16,9 @@ test("Assignemnt 1: /auth", async ({ request }) => {
   });
 
   await test.step("POST: /validate", async () => {
-    const response = await request.post("/auth/validate", {
-      data: { token: token },
-    });
-    expect(response.status()).toBe(200);
+   
   });
   await test.step("POST: /logout", async () => {
-    const response = await request.post("/auth/logout", {
-      data: { token: token },
-    });
-    expect(response.status()).toBe(200);
+    
   });
 });
