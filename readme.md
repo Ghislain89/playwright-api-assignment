@@ -24,24 +24,19 @@ It's commonly considered best practice to balance principles such as KISS and DR
 
 # Assignments
 
-For our assignments we will be using the https://automationintesting.online/ Booking Platform. It offers various CRUD operations as well as authentication making it an ideal candiate for our workshop!
+For our assignments we will be using a RESTful booking platform running locally. It offers various CRUD operations as well as authentication making it an ideal candidate for our workshop!
 
-Credentials
+Note: Make sure to start the API server locally before running the tests. The server should be running on port 3000.
+
+Credentials:
 username: admin
-password: password
-
-
-> [!IMPORTANT]  
-> The database is reset every 10 minutes, make sure to take this in to account!
-
+password: password123
 
 ## Documentation
 
-We will be using the following API's:
-
-- Auth: https://automationintesting.online/auth/swagger-ui/index.html
-- Rooms: https://automationintesting.online/room/swagger-ui/index.html
-- Booking: https://automationintesting.online/booking/swagger-ui/index.html
+the API documentation is started alongside the API:
+* API: http://localhost:3000/
+* Docs: http://localhost:3000/api-docs
 - HTTP Statuscodes: https://javaconceptoftheday.com/http-status-codes-cheat-sheet/#google_vignette
 
 ## Assignment 1 (Authentication)

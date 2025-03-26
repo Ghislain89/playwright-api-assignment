@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
-  testDir: "./tests",
+  testDir: "./playwright/tests",
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
@@ -15,7 +15,7 @@ export default defineConfig({
       name: "API",
       use: {
         ignoreHTTPSErrors: true,
-        baseURL: "https://automationintesting.online",
+        baseURL: "http://localhost:3000/",
       },
     },
   ],
