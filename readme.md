@@ -41,8 +41,8 @@ the API documentation is started alongside the API:
 
 ## Assignment 1 (Authentication)
 
-- Login to the Platform, fetch a token.
-- Store the token so you can re-use it in other subsequent calls.
+- Register a new (random) user
+- Login as that user
 - Validate that the token you received is valid.
 
 ## Assignment 2 (Rooms & Booking)

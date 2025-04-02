@@ -2,6 +2,7 @@ import { test } from "../support/fixtures/test.fixture";
 import { expect } from "../support/fixtures/expect.fixture";
 import { createRandomRoom } from "../support/datafactories/room.factory";
 import { createRandomBooking } from "../support/datafactories/booking.factory";
+import { createRandomUser } from "../support/datafactories/user.factory";
 import {
   getApiRoomsResponse,
   getApiRoomsIdResponse,
@@ -12,48 +13,98 @@ import {
 } from "../support/zod/zod/bookings";
 
 test.describe("Bonus: Improve the overall setup", () => {
-  let token: string;
+  let adminToken: string;
+  let userToken: string;
+  const adminUser = { username: "admin", password: "password123" };
 
   test.beforeEach(async ({ api }) => {
     const { statusCode, responseBody } = await api.post("/api/auth/login", {
-      username: "admin",
-      password: "password123",
+      username: adminUser.username,
+      password: adminUser.password,
     });
     expect(statusCode).toBe(200);
     expect(responseBody.success).toBe(true);
     expect(responseBody.data).toHaveProperty("token");
-    token = responseBody.data.token;
+    adminToken = responseBody.data.token;
   });
 
   test("Assignment 1: /auth", async ({ api }) => {
-    await test.step("POST: /api/auth/logout", async () => {
+    const user = createRandomUser();
+
+    await test.step("Register a new regular user", async () => {
       const { statusCode, responseBody } = await api.post(
-        "/api/auth/logout",
-        {},
-        token,
+        "/api/auth/register",
+        user,
       );
+      expect(statusCode).toBe(201);
+      expect(responseBody.success).toBe(true);
+      expect(responseBody.data).toHaveProperty("token");
+      expect(responseBody.data).toHaveProperty("user");
+      expect(responseBody.data.user).toHaveProperty("role");
+    });
+
+    await test.step("Login as the newly created regular user", async () => {
+      const { statusCode, responseBody } = await api.post("/api/auth/login", {
+        username: user.username,
+        password: user.password,
+      });
       expect(statusCode).toBe(200);
       expect(responseBody.success).toBe(true);
+      expect(responseBody.data).toHaveProperty("token");
+      expect(responseBody.data).toHaveProperty("user");
+      expect(responseBody.data.user).toHaveProperty("username", user.username);
+      expect(responseBody.data.user).toHaveProperty("role");
+      userToken = responseBody.data.token;
     });
   });
 
   test("Assignment 2: /Rooms & /Booking", async ({ api }) => {
+    const user = createRandomUser();
     const room = await createRandomRoom();
     let createdRoom: any = {};
     let booking: any = {};
 
-    await test.step("GET: /api/rooms - Check for Available Rooms", async () => {
-      const { statusCode, responseBody } = await api.get("/api/rooms", token);
+    await test.step("Register a new regular user", async () => {
+      const { statusCode, responseBody } = await api.post(
+        "/api/auth/register",
+        user,
+      );
+      expect(statusCode).toBe(201);
+      expect(responseBody.success).toBe(true);
+      expect(responseBody.data).toHaveProperty("token");
+      expect(responseBody.data).toHaveProperty("user");
+      expect(responseBody.data.user).toHaveProperty("role");
+    });
+
+    await test.step("Login as the newly created regular user", async () => {
+      const { statusCode, responseBody } = await api.post("/api/auth/login", {
+        username: user.username,
+        password: user.password,
+      });
+      expect(statusCode).toBe(200);
+      expect(responseBody.success).toBe(true);
+      expect(responseBody.data).toHaveProperty("token");
+      expect(responseBody.data).toHaveProperty("user");
+      expect(responseBody.data.user).toHaveProperty("username", user.username);
+      expect(responseBody.data.user).toHaveProperty("role");
+      userToken = responseBody.data.token;
+    });
+
+    await test.step("Retrieve list of available rooms", async () => {
+      const { statusCode, responseBody } = await api.get(
+        "/api/rooms",
+        userToken,
+      );
       expect(statusCode).toBe(200);
       expect(responseBody.success).toBe(true);
       await expect(responseBody).toMatchSchema(getApiRoomsResponse);
     });
 
-    await test.step("POST: /api/rooms - Create a Room", async () => {
+    await test.step("Create a new room as admin", async () => {
       const { statusCode, responseBody } = await api.post(
         "/api/rooms",
         room,
-        token,
+        adminToken,
       );
       createdRoom = responseBody.data;
       expect(statusCode).toBe(201);
@@ -61,17 +112,17 @@ test.describe("Bonus: Improve the overall setup", () => {
       await expect(responseBody).toMatchSchema(getApiRoomsIdResponse);
     });
 
-    await test.step("GET: /api/rooms - Check created room", async () => {
+    await test.step("Verify the newly created room details", async () => {
       const { statusCode, responseBody } = await api.get(
         `/api/rooms/${createdRoom.id}`,
-        token,
+        userToken,
       );
       expect(statusCode).toBe(200);
       expect(responseBody.success).toBe(true);
       await expect(responseBody).toMatchSchema(getApiRoomsIdResponse);
     });
 
-    await test.step("POST: /api/bookings - Create a booking", async () => {
+    await test.step("Create a new booking for the room", async () => {
       const randomBooking = await createRandomBooking(
         createdRoom.id,
         "2025-03-05",
@@ -81,7 +132,7 @@ test.describe("Bonus: Improve the overall setup", () => {
       const { statusCode, responseBody } = await api.post(
         "/api/bookings",
         randomBooking,
-        token,
+        userToken,
       );
       booking = responseBody.data;
       expect(statusCode).toBe(201);
@@ -89,20 +140,20 @@ test.describe("Bonus: Improve the overall setup", () => {
       await expect(responseBody).toMatchSchema(getApiBookingsIdResponse);
     });
 
-    await test.step("GET: /api/bookings - Get booking details", async () => {
+    await test.step("Retrieve the booking details", async () => {
       const { statusCode, responseBody } = await api.get(
         `/api/bookings/${booking.id}`,
-        token,
+        userToken,
       );
       expect(statusCode).toBe(200);
       expect(responseBody.success).toBe(true);
       await expect(responseBody).toMatchSchema(getApiBookingsIdResponse);
     });
 
-    await test.step("DELETE: /api/bookings - Delete a booking", async () => {
+    await test.step("Cancel the created booking", async () => {
       const { statusCode, responseBody } = await api.delete(
         `/api/bookings/${booking.id}`,
-        token,
+        userToken,
       );
       expect(statusCode).toBe(200);
       expect(responseBody.success).toBe(true);
@@ -110,10 +161,10 @@ test.describe("Bonus: Improve the overall setup", () => {
       await expect(responseBody).toMatchSchema(deleteApiBookingsIdResponse);
     });
 
-    await test.step("GET: /api/bookings - Verify booking is deleted", async () => {
+    await test.step("Verify the booking status is cancelled", async () => {
       const { statusCode, responseBody } = await api.get(
         `/api/bookings/${booking.id}`,
-        token,
+        userToken,
       );
       expect(statusCode).toBe(200);
       expect(responseBody.success).toBe(true);

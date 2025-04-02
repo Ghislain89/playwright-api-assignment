@@ -122,17 +122,24 @@ router.post('/login', async (req, res) => {
  *         description: Username already exists
  */
 router.post('/register', async (req, res) => {
+  console.log("\n=== Register Route Handler ===");
+  console.log("Received request body:", JSON.stringify(req.body, null, 2));
+
   try {
     const userData: RegisterRequest = req.body;
-    const user = await authController.register(userData);
+    console.log("Calling auth controller register...");
+    const response = await authController.register(userData);
+    console.log("Auth controller returned:", JSON.stringify(response, null, 2));
+
     res.status(201).json({
       success: true,
-      data: user
+      data: response,
     });
   } catch (error) {
+    console.log("Error in register route:", error);
     res.status(400).json({
       success: false,
-      error: 'Username already exists'
+      error: "Username already exists",
     });
   }
 });

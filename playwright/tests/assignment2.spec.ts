@@ -1,28 +1,62 @@
 import { test, expect } from "@playwright/test";
 import { createRandomRoom } from "../support/datafactories/room.factory";
 import { createRandomBooking } from "../support/datafactories/booking.factory";
+import { createRandomUser } from "../support/datafactories/user.factory";
 
-test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
-  let token: string;
+test("Assignment 2: Rooms & Booking", async ({ request }) => {
+  const adminUser = { username: "admin", password: "password123" };
+  let adminToken: string;
+  let userToken: string;
+  const user = await createRandomUser();
   const room = await createRandomRoom();
   let createdRoom: any = {};
   let booking: any = {};
 
-  await test.step("POST: /api/auth/login - Fetch a token to create a room", async () => {
+  await test.step("Login as admin user to get admin privileges", async () => {
     const response = await request.post("/api/auth/login", {
-      data: { username: "admin", password: "password123" },
+      data: adminUser,
     });
 
     expect(response.status()).toBe(200);
     const responseBody = await response.json();
     expect(responseBody.success).toBe(true);
     expect(responseBody.data).toHaveProperty("token");
-    token = responseBody.data.token;
+    adminToken = responseBody.data.token;
   });
 
-  await test.step("GET: /api/rooms - Check for Available Rooms", async () => {
+  await test.step("Register a new regular user", async () => {
+    const response = await request.post("/api/auth/register", {
+      data: user,
+    });
+
+    const responseBody = await response.json();
+
+    expect(response.status()).toBe(201);
+    expect(responseBody.success).toBe(true);
+    expect(responseBody.data).toHaveProperty("token");
+    expect(responseBody.data).toHaveProperty("user");
+    expect(responseBody.data.user).toHaveProperty("role");
+  });
+
+  await test.step("Login as the newly created regular user", async () => {
+    const response = await request.post("/api/auth/login", {
+      data: { username: user.username, password: user.password },
+    });
+
+    expect(response.status()).toBe(200);
+    const responseBody = await response.json();
+    expect(responseBody.success).toBe(true);
+    expect(responseBody.data).toHaveProperty("token");
+    expect(responseBody.data).toHaveProperty("user");
+    expect(responseBody.data.user).toHaveProperty("username", user.username);
+    expect(responseBody.data.user).toHaveProperty("role");
+
+    userToken = responseBody.data.token;
+  });
+
+  await test.step("Retrieve list of available rooms", async () => {
     const response = await request.get("/api/rooms", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
 
@@ -35,9 +69,9 @@ test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
     expect(responseJson.data[0]).toHaveProperty("amenities");
   });
 
-  await test.step("POST: /api/rooms - Create a Room", async () => {
+  await test.step("Create a new room as admin", async () => {
     const response = await request.post("/api/rooms", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${adminToken}` },
       data: room,
     });
     expect(response.status()).toBe(201);
@@ -50,12 +84,12 @@ test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
     expect(createdRoom.type).toEqual(room.type);
     expect(createdRoom.price).toEqual(room.price);
     expect(createdRoom.capacity).toEqual(room.capacity);
-    expect(JSON.parse(createdRoom.amenities)).toEqual(room.amenities);
+    expect(createdRoom.amenities).toEqual(room.amenities);
   });
 
-  await test.step("GET: /api/rooms - Check created room", async () => {
+  await test.step("Verify the newly created room details", async () => {
     const response = await request.get(`/api/rooms/${createdRoom.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
 
@@ -65,10 +99,10 @@ test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
     expect(responseBody.data.type).toEqual(createdRoom.type);
     expect(responseBody.data.price).toEqual(createdRoom.price);
     expect(responseBody.data.capacity).toEqual(createdRoom.capacity);
-    expect(JSON.parse(responseBody.data.amenities)).toEqual(room.amenities);
+    expect(responseBody.data.amenities).toEqual(room.amenities);
   });
 
-  await test.step("POST: /api/bookings - Create a booking", async () => {
+  await test.step("Create a new booking for the room", async () => {
     const bookingData = await createRandomBooking(
       createdRoom.id,
       "2025-04-05",
@@ -76,7 +110,7 @@ test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
     );
 
     const response = await request.post("/api/bookings", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${userToken}` },
       data: bookingData,
     });
     expect(response.status()).toBe(201);
@@ -87,9 +121,9 @@ test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
     expect(booking.roomId).toEqual(createdRoom.id);
   });
 
-  await test.step("DELETE: /api/bookings - Delete a booking", async () => {
+  await test.step("Cancel the created booking", async () => {
     const response = await request.delete(`/api/bookings/${booking.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
 
@@ -97,9 +131,9 @@ test("Assignment 2: /Rooms & /Booking", async ({ request }) => {
     expect(responseBody.success).toBe(true);
   });
 
-  await test.step("GET: /api/bookings - Verify booking is deleted", async () => {
+  await test.step("Verify the booking status is cancelled", async () => {
     const response = await request.get(`/api/bookings/${booking.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
 
