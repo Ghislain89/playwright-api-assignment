@@ -6,7 +6,7 @@ test("Assignment 1: Authentication", async ({ request }) => {
   const user = await createRandomUser();
 
   await test.step("Register a new user with valid credentials", async () => {
-    const response = await request.post("/api/auth/register", {
+    const response = await request.post("auth/register", {
       data: user,
     });
 
@@ -20,7 +20,7 @@ test("Assignment 1: Authentication", async ({ request }) => {
   });
 
   await test.step("Successfully login with the newly created user", async () => {
-    const response = await request.post("/api/auth/login", {
+    const response = await request.post("auth/login", {
       data: { username: user.username, password: user.password },
     });
 
@@ -36,7 +36,7 @@ test("Assignment 1: Authentication", async ({ request }) => {
   });
 
   await test.step("Successfully logout the authenticated user", async () => {
-    const response = await request.post("/api/auth/logout", {
+    const response = await request.post("auth/logout", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

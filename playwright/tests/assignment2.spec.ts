@@ -13,7 +13,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   let booking: any = {};
 
   await test.step("Login as admin user to get admin privileges", async () => {
-    const response = await request.post("/api/auth/login", {
+    const response = await request.post("auth/login", {
       data: adminUser,
     });
 
@@ -25,7 +25,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Register a new regular user", async () => {
-    const response = await request.post("/api/auth/register", {
+    const response = await request.post("auth/register", {
       data: user,
     });
 
@@ -39,7 +39,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Login as the newly created regular user", async () => {
-    const response = await request.post("/api/auth/login", {
+    const response = await request.post("auth/login", {
       data: { username: user.username, password: user.password },
     });
 
@@ -55,7 +55,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Retrieve list of available rooms", async () => {
-    const response = await request.get("/api/rooms", {
+    const response = await request.get("rooms", {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
@@ -70,7 +70,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Create a new room as admin", async () => {
-    const response = await request.post("/api/rooms", {
+    const response = await request.post("rooms", {
       headers: { Authorization: `Bearer ${adminToken}` },
       data: room,
     });
@@ -88,7 +88,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Verify the newly created room details", async () => {
-    const response = await request.get(`/api/rooms/${createdRoom.id}`, {
+    const response = await request.get(`rooms/${createdRoom.id}`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
@@ -109,7 +109,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
       "2025-04-07",
     );
 
-    const response = await request.post("/api/bookings", {
+    const response = await request.post("bookings", {
       headers: { Authorization: `Bearer ${userToken}` },
       data: bookingData,
     });
@@ -122,7 +122,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Cancel the created booking", async () => {
-    const response = await request.delete(`/api/bookings/${booking.id}`, {
+    const response = await request.delete(`bookings/${booking.id}`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);
@@ -132,7 +132,7 @@ test("Assignment 2: Rooms & Booking", async ({ request }) => {
   });
 
   await test.step("Verify the booking status is cancelled", async () => {
-    const response = await request.get(`/api/bookings/${booking.id}`, {
+    const response = await request.get(`bookings/${booking.id}`, {
       headers: { Authorization: `Bearer ${userToken}` },
     });
     expect(response.status()).toBe(200);

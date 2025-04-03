@@ -15,7 +15,7 @@ export default defineConfig({
       name: "API",
       use: {
         ignoreHTTPSErrors: true,
-        baseURL: "http://localhost:3000/",
+        baseURL: "http://localhost:3000/api/",
       },
     },
   ],

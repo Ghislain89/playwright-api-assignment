@@ -18,7 +18,7 @@ test.describe("Bonus: Improve the overall setup", () => {
   const adminUser = { username: "admin", password: "password123" };
 
   test.beforeEach(async ({ api }) => {
-    const { statusCode, responseBody } = await api.post("/api/auth/login", {
+    const { statusCode, responseBody } = await api.post("auth/login", {
       username: adminUser.username,
       password: adminUser.password,
     });
@@ -33,7 +33,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Register a new regular user", async () => {
       const { statusCode, responseBody } = await api.post(
-        "/api/auth/register",
+        "auth/register",
         user,
       );
       expect(statusCode).toBe(201);
@@ -44,7 +44,7 @@ test.describe("Bonus: Improve the overall setup", () => {
     });
 
     await test.step("Login as the newly created regular user", async () => {
-      const { statusCode, responseBody } = await api.post("/api/auth/login", {
+      const { statusCode, responseBody } = await api.post("auth/login", {
         username: user.username,
         password: user.password,
       });
@@ -66,7 +66,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Register a new regular user", async () => {
       const { statusCode, responseBody } = await api.post(
-        "/api/auth/register",
+        "auth/register",
         user,
       );
       expect(statusCode).toBe(201);
@@ -77,7 +77,7 @@ test.describe("Bonus: Improve the overall setup", () => {
     });
 
     await test.step("Login as the newly created regular user", async () => {
-      const { statusCode, responseBody } = await api.post("/api/auth/login", {
+      const { statusCode, responseBody } = await api.post("auth/login", {
         username: user.username,
         password: user.password,
       });
@@ -92,7 +92,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Retrieve list of available rooms", async () => {
       const { statusCode, responseBody } = await api.get(
-        "/api/rooms",
+        "rooms",
         userToken,
       );
       expect(statusCode).toBe(200);
@@ -102,7 +102,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Create a new room as admin", async () => {
       const { statusCode, responseBody } = await api.post(
-        "/api/rooms",
+        "rooms",
         room,
         adminToken,
       );
@@ -114,7 +114,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Verify the newly created room details", async () => {
       const { statusCode, responseBody } = await api.get(
-        `/api/rooms/${createdRoom.id}`,
+        `rooms/${createdRoom.id}`,
         userToken,
       );
       expect(statusCode).toBe(200);
@@ -130,7 +130,7 @@ test.describe("Bonus: Improve the overall setup", () => {
       );
 
       const { statusCode, responseBody } = await api.post(
-        "/api/bookings",
+        "bookings",
         randomBooking,
         userToken,
       );
@@ -142,7 +142,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Retrieve the booking details", async () => {
       const { statusCode, responseBody } = await api.get(
-        `/api/bookings/${booking.id}`,
+        `bookings/${booking.id}`,
         userToken,
       );
       expect(statusCode).toBe(200);
@@ -152,7 +152,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Cancel the created booking", async () => {
       const { statusCode, responseBody } = await api.delete(
-        `/api/bookings/${booking.id}`,
+        `bookings/${booking.id}`,
         userToken,
       );
       expect(statusCode).toBe(200);
@@ -163,7 +163,7 @@ test.describe("Bonus: Improve the overall setup", () => {
 
     await test.step("Verify the booking status is cancelled", async () => {
       const { statusCode, responseBody } = await api.get(
-        `/api/bookings/${booking.id}`,
+        `bookings/${booking.id}`,
         userToken,
       );
       expect(statusCode).toBe(200);
