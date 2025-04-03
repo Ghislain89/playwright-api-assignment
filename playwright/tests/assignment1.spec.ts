@@ -6,44 +6,14 @@ test("Assignment 1: Authentication", async ({ request }) => {
   const user = await createRandomUser();
 
   await test.step("Register a new user with valid credentials", async () => {
-    const response = await request.post("auth/register", {
-      data: user,
-    });
-
-    const responseBody = await response.json();
-
-    expect(response.status()).toBe(201);
-    expect(responseBody.success).toBe(true);
-    expect(responseBody.data).toHaveProperty("token");
-    expect(responseBody.data).toHaveProperty("user");
-    expect(responseBody.data.user).toHaveProperty("role");
+    // This step is to register a new user
   });
 
   await test.step("Successfully login with the newly created user", async () => {
-    const response = await request.post("auth/login", {
-      data: { username: user.username, password: user.password },
-    });
-
-    expect(response.status()).toBe(200);
-    const responseBody = await response.json();
-    expect(responseBody.success).toBe(true);
-    expect(responseBody.data).toHaveProperty("token");
-    expect(responseBody.data).toHaveProperty("user");
-    expect(responseBody.data.user).toHaveProperty("username", user.username);
-    expect(responseBody.data.user).toHaveProperty("role");
-
-    token = responseBody.data.token;
+    // Login with the new user, store the token in the token variable (already define on line 5)
   });
 
   await test.step("Successfully logout the authenticated user", async () => {
-    const response = await request.post("auth/logout", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    expect(response.status()).toBe(200);
-    const responseBody = await response.json();
-    expect(responseBody.success).toBe(true);
+   // Logout with the user you just logged in with. 
   });
 });
