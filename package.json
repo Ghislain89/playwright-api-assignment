@@ -4,7 +4,6 @@
   "description": "TypeScript API for Restful Booker Platform",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "prisma:seed": "ts-node prisma/seed.ts",
     "prisma:reset": "npx prisma migrate reset --force",

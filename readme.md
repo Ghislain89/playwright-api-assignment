@@ -3,7 +3,8 @@ As mentioned in the pre-workshop installation instructions. We assume you've ins
 
 1. Clone this repository
 2. Run `npm install` (you can probably use other package managers as well, but I haven't tested that)
-3. Run tests by invoking the test script: `npm run test` or the testing panel in VsCode (with the Playwright Plugin). You can also use specify the filename of the test to run by invoking this command: `npx playwright test assignment1.spec.ts`
+3. run `npm run dev` to start the API server
+3. (in a seperate terminal) Run tests by invoking the test script: `npm run test` or the testing panel in VsCode (with the Playwright Plugin). You can also use specify the filename of the test to run by invoking this command: `npx playwright test assignment1.spec.ts`
 
 # Structure
 It's commonly considered best practice to balance principles such as KISS and DRY. One of the more common ways of doing this, is by separating things in a folder structure.
