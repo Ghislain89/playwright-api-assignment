@@ -3,7 +3,8 @@ As mentioned in the pre-workshop installation instructions. We assume you've ins
 
 1. Clone this repository
 2. Run `npm install` (you can probably use other package managers as well, but I haven't tested that)
-3. Run tests by invoking the test script: `npm run test` or the testing panel in VsCode (with the Playwright Plugin). You can also use specify the filename of the test to run by invoking this command: `npx playwright test assignment1.spec.ts`
+3. run `npm run dev` to start the API server
+3. (in a seperate terminal) Run tests by invoking the test script: `npm run test` or the testing panel in VsCode (with the Playwright Plugin). You can also use specify the filename of the test to run by invoking this command: `npx playwright test assignment1.spec.ts`
 
 # Structure
 It's commonly considered best practice to balance principles such as KISS and DRY. One of the more common ways of doing this, is by separating things in a folder structure.
@@ -24,30 +25,25 @@ It's commonly considered best practice to balance principles such as KISS and DR
 
 # Assignments
 
-For our assignments we will be using the https://automationintesting.online/ Booking Platform. It offers various CRUD operations as well as authentication making it an ideal candiate for our workshop!
+For our assignments we will be using a RESTful booking platform running locally. It offers various CRUD operations as well as authentication making it an ideal candidate for our workshop!
 
-Credentials
+Note: Make sure to start the API server locally before running the tests. The server should be running on port 3000.
+
+Credentials:
 username: admin
-password: password
-
-
-> [!IMPORTANT]  
-> The database is reset every 10 minutes, make sure to take this in to account!
-
+password: password123
 
 ## Documentation
 
-We will be using the following API's:
-
-- Auth: https://automationintesting.online/auth/swagger-ui/index.html
-- Rooms: https://automationintesting.online/room/swagger-ui/index.html
-- Booking: https://automationintesting.online/booking/swagger-ui/index.html
+the API documentation is started alongside the API:
+* API: http://localhost:3000/
+* Docs: http://localhost:3000/api-docs
 - HTTP Statuscodes: https://javaconceptoftheday.com/http-status-codes-cheat-sheet/#google_vignette
 
 ## Assignment 1 (Authentication)
 
-- Login to the Platform, fetch a token.
-- Store the token so you can re-use it in other subsequent calls.
+- Register a new (random) user
+- Login as that user
 - Validate that the token you received is valid.
 
 ## Assignment 2 (Rooms & Booking)
